@@ -6,13 +6,23 @@
       check out the
       <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
     </p>
-    <h3>Installed CLI Plugins</h3>
+    <h3>
+      Installed CLI Plugins
+      <v-hotkey keys="Ctrl_alt_s" showKey="Ctrl" @handleHotkey="handleHotkey1">
+        Ctrl + Alt + S
+      </v-hotkey>
+    </h3>
+
     <ul>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank" rel="noopener">typescript</a></li>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
     </ul>
-    <h3>Essential Links</h3>
+    <h3>Essential Links
+      <v-hotkey keys="Ctrl_alt_d" showKey="Ctrl" @handleHotkey="handleHotkey2">
+        Ctrl + Alt + D
+      </v-hotkey>
+    </h3>
     <ul>
       <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
       <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
@@ -21,7 +31,11 @@
       <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
 
     </ul>
-    <h3 v-hotkey="'alt_a'">Ecosystem</h3>
+    <h3>Ecosystem
+      <v-hotkey keys="Ctrl_alt_a" showKey="Ctrl" @handleHotkey="handleHotkey3">
+        Ctrl + Alt + A
+      </v-hotkey>
+    </h3>
     <ul>
       <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
       <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
@@ -34,64 +48,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, ref } from 'vue';
-import { useMagicKeys } from '@vueuse/core';
+import { defineComponent } from 'vue';
+// import { useMagicKeys } from '@vueuse/core';
+import VHotkey from './VHotkeyTooltip.vue';
 
 export default defineComponent({
   name: 'HelloWorld',
+  components: {
+    VHotkey,
+  },
   props: {
     msg: String,
   },
   setup() {
-    const keys = useMagicKeys({ reactive: true });
-
-    /* eslint-disable */
-    // const { alt_a, alt_s } = useMagicKeys();
-    // watch(alt_a, (v) => {
-    //   if (v) {
-    //     console.log('Alt + A Clicked');
-    //   }
-    // });
-    // watch(alt_s, (v) => {
-    //   if (v) {
-    //     console.log('Alt + B Clicked');
-    //   }
-    // });
-
-    return { keys };
-  },
-  directives: {
-    hotkey: {
-      created(el,binding, vnode){
-        console.log('created')
-        console.log(binding.value)
-      },
-      mounted(el, binding) {
-        console.log(binding)
-        console.log(el)
-
-        //binding.value 가 'alt_s' 이면 alt_s 키를 누르면 binding.value() 함수를 실행한다.
-        const { alt_a, alt_s, alt } = useMagicKeys();
-        const test = ref(false);
-        watch(alt, (v) => {
-          if (v) {
-            const newElement = document.createElement('div');
-            newElement.innerHTML = '<div v-if="test">You are holding the Alt key!</div>';
-            el.appendChild(newElement);
-          }
-        });
-        watch(alt_a, (v) => {
-          if (v) {
-            console.log('Alt + A Clicked')
-          }
-        })
-        watch(alt_s, (v) => {
-          if (v) {
-            console.log('Alt + S Clicked')
-          }
-        });
-      },
-    },
+    const handleHotkey1 = () => {
+      console.log('hotkey1');
+    };
+    const handleHotkey2 = () => {
+      console.log('hotkey2');
+    };
+    const handleHotkey3 = () => {
+      console.log('hotkey3');
+    };
+    return {
+      handleHotkey1,
+      handleHotkey2,
+      handleHotkey3,
+    };
   },
 });
 </script>
