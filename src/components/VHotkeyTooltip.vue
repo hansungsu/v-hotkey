@@ -45,7 +45,6 @@ export default {
 
     watch(magicKey[props.keys], (v) => {
       if (v) {
-        console.log(props.keys);
         runEvent();
       }
     });
@@ -81,7 +80,6 @@ export default {
     const handleResize = () => {
       resizeData.windowWidth = window.innerWidth;
       resizeData.windowHeight = window.innerHeight;
-      console.log(resizeData.windowWidth, resizeData.windowHeight);
       tooltipPosition();
     };
 
