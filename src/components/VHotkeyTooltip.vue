@@ -1,6 +1,6 @@
 <template>
   <transition>
-    <div ref="hotkeyRef" class="hotkey" v-show="isTooltip" :style="hotkeyStyle">
+    <div ref="hotkeyRef" class="hotkey" :style="hotkeyStyle" :class="isTooltip?'visiblity':'' ">
     <div class="wrap">
       <slot></slot>
     </div>
@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import {
-  ref, watch, getCurrentInstance, onMounted,
+  ref, watch, getCurrentInstance, onMounted, reactive, onBeforeUnmount,
 } from 'vue';
 import { useMagicKeys } from '@vueuse/core';
 
@@ -29,7 +29,6 @@ export default {
   emits: ['handleHotkey'],
 
   setup(props : any, { emit } : any) {
-    console.log('=== created ===');
     const isTooltip = ref(false);
     const magicKey = useMagicKeys();
     const runEvent = () => {
@@ -56,22 +55,54 @@ export default {
       top: '0px',
       left: '0px',
     });
+    const hotkeyRef = ref<any>(null);
 
-    onMounted(() => {
+    const tooltipPosition = () => {
       const parent = instance?.vnode?.el?.parentElement;
       const parentTop = parent?.getBoundingClientRect().top ?? 0;
       const parentHeight = parent?.getBoundingClientRect().height ?? 0;
       const parentTopLeft = parent?.getBoundingClientRect().left ?? 0;
       const parentTopwidth = parent?.getBoundingClientRect().width ?? 0;
+
+      const nodeSize = hotkeyRef.value.offsetWidth;
+
       hotkeyStyle.value = {
-        top: `${parentTop + (parentHeight / 2) - (32.5 / 2)}px`,
-        left: `${parentTopLeft + parentTopwidth}px`,
+        top: `${parentTop + parentHeight}px`,
+        left: `${parentTopLeft + (parentTopwidth / 2) - (nodeSize / 2)}px`,
       };
+    };
+
+    // tooltip resize event
+    const resizeData = reactive({
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+    });
+
+    const handleResize = () => {
+      resizeData.windowWidth = window.innerWidth;
+      resizeData.windowHeight = window.innerHeight;
+      console.log(resizeData.windowWidth, resizeData.windowHeight);
+      tooltipPosition();
+    };
+
+    onMounted(() => {
+      window.addEventListener('resize', handleResize);
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', handleResize);
+    });
+
+    // tooltip position
+    onMounted(() => {
+      tooltipPosition();
     });
 
     return {
       isTooltip,
       hotkeyStyle,
+      hotkeyRef,
+      resizeData,
     };
   },
 };
@@ -80,6 +111,8 @@ export default {
 .hotkey {
   position: absolute;
   display: inline-block;
+  visibility: hidden;
+  /* display: none; */
   padding: 5px 10px;
   border-radius: 3px;
   background-color: #3a384e;
@@ -88,7 +121,14 @@ export default {
   line-height: 1.5;
   top:0px;
   left:0px;
-  margin-left:10px;
+  margin-top:10px;
+  opacity:0;
+  transition:opacity 0.5s ease;
+}
+.visiblity{
+  visibility:visible;
+  opacity: 1;
+  transition:opacity 0.5s ease;
 }
 
 .v-enter-active,
